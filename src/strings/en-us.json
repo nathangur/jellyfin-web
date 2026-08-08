@@ -1520,6 +1520,8 @@
     "RememberSubtitleSelectionsHelp": "Try to set the subtitle track to the closest match to the last video.",
     "Remixer": "Remixer",
     "RemoveFromCollection": "Remove from collection",
+    "RemoveFromContinueWatching": "Remove from continue watching",
+    "RemoveFromNextUp": "Remove from next up",
     "RemoveFromPlaylist": "Remove from playlist",
     "RenderPgsSubtitle": "Experimental PGS and VobSub subtitle rendering",
     "RenderPgsSubtitleHelp": "Determine if the client should render PGS and VobSub subtitles instead of using burned in subtitles. This can avoid server-side transcoding in exchange of client-side rendering performance.",

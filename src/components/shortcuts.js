@@ -113,6 +113,9 @@ function showContextMenu(card, options = {}) {
         const playlistId = card.getAttribute('data-playlistid');
         const collectionId = card.getAttribute('data-collectionid');
 
+        const sectionContainer = dom.parentWithAttribute(card, 'data-section');
+        const sectionType = sectionContainer ? sectionContainer.getAttribute('data-section') : null;
+
         if (playlistId) {
             const elem = dom.parentWithAttribute(card, 'data-playlistitemid');
             item.PlaylistItemId = elem ? elem.getAttribute('data-playlistitemid') : null;
@@ -169,6 +172,7 @@ function showContextMenu(card, options = {}) {
                     playlistId,
                     canEditPlaylist: !!playlistPerms.CanEdit,
                     collectionId,
+                    sectionType,
                     user,
                     ...options
                 });

@@ -3,6 +3,7 @@ import { getLibraryApi } from '@jellyfin/sdk/lib/utils/api/library-api';
 
 import { AppFeature } from 'constants/appFeature';
 import { ServerConnections } from 'lib/jellyfin-apiclient';
+import { queryClient } from 'utils/query/queryClient';
 
 import browser from '../scripts/browser';
 import { copy } from '../scripts/clipboard';
@@ -338,6 +339,24 @@ export async function getCommands(options) {
         });
     }
 
+    if (options.resumeOverride !== false
+        && options.sectionType !== 'nextup'
+        && item.UserData?.PlaybackPositionTicks > 0) {
+        commands.push({
+            name: globalize.translate('RemoveFromContinueWatching'),
+            id: 'removefromcontinuewatching',
+            icon: 'visibility_off'
+        });
+    }
+
+    if (options.resumeOverride !== false && options.sectionType === 'nextup') {
+        commands.push({
+            name: globalize.translate('RemoveFromNextUp'),
+            id: 'removefromnextup',
+            icon: 'visibility_off'
+        });
+    }
+
     if (!browser.tv && options.share === true && itemHelper.canShare(item, user)) {
         commands.push({
             name: globalize.translate('Share'),
@@ -646,6 +665,29 @@ function executeCommand(item, id, options) {
                         Ids: [item.Id].join(',')
                     })
                 }).then(function () {
+                    getResolveFunction(resolve, id, true)();
+                });
+                break;
+            case 'removefromcontinuewatching':
+                apiClient.ajax({
+                    url: apiClient.getUrl('UserItems/' + item.Id + '/ResumeOverride'),
+                    type: 'POST'
+                }).then(function () {
+                    // Invalidate the ResumeItems query so that the continue watching section is updated
+                    void queryClient.invalidateQueries({
+                        queryKey: ['User', apiClient.getCurrentUserId(), 'ResumeItems']
+                    });
+                    getResolveFunction(resolve, id, true)();
+                });
+                break;
+            case 'removefromnextup':
+                apiClient.ajax({
+                    url: apiClient.getUrl('UserItems/' + item.Id + '/NextUpOverride'),
+                    type: 'POST'
+                }).then(function () {
+                    void queryClient.invalidateQueries({
+                        queryKey: ['User', apiClient.getCurrentUserId(), 'NextUp']
+                    });
                     getResolveFunction(resolve, id, true)();
                 });
                 break;
